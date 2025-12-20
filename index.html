@@ -44,6 +44,8 @@
       width: 45px; height: 45px; border-radius: 12px; border: none;
       background: var(--card); box-shadow: var(--neumo-shadow);
       color: var(--text); font-size: 1.3rem; cursor: pointer; transition: 0.3s;
+          display: none;  /* Ẩn nút đi nhưng vẫn giữ trong HTML */
+
     }
     .mode-btn:active { box-shadow: var(--neumo-inset); }
 
@@ -272,7 +274,6 @@
 <body>
 
   <header>
-    <button class="mode-btn" id="darkModeToggle"><i class='bx bxs-moon' id="modeIcon"></i></button>
   </header>
 
   <main class="main">
