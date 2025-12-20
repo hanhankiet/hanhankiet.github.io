@@ -264,16 +264,50 @@
         font-size: 0.8rem;
       }
     }
+    /* FPS DISPLAY - Kiểu wusteam.com */
+.fps-display {
+  margin-right: 15px;
+  padding: 8px 15px;
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: var(--neumo-shadow);
+  font-family: 'Concert One', cursive;
+  color: rgb(27, 0, 255);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+#fps {
+  font-weight: bold;
+  font-size: 1.1rem;
+  transition: color 0.3s ease;
+}
+
+/* Animation nhẹ */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Màu sắc theo FPS */
+.fps-excellent { color: #1b00ff !important; text-shadow: 0 0 10px rgba(27, 0, 255, 0.3); }
+.fps-good { color: #ff9800 !important; text-shadow: 0 0 10px rgba(255, 152, 0, 0.3); }
+.fps-poor { color: #ff0000 !important; text-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
 </head>
 <body>
 
   <header>
+   
     <button class="mode-btn" id="darkModeToggle"><i class='bx bxs-moon' id="modeIcon"></i></button>
   </header>
 
   <main class="main">
+    
     <div class="avatar-container">
       <div class="spinning-border"></div>
       <img src="kiet.jpg" alt="Hà Nhân Kiệt" class="avatar">
@@ -307,7 +341,8 @@
          <p> <span class="heart">❤️</span>Hà Nhân Kiệt</p>
     </div>
   </footer>
-  <style>/* 6. FOOTER */
+  <style>
+    /* 6. FOOTER */
 .footer {
     width: 100%;
     max-width: 900px;
@@ -323,6 +358,192 @@
     color: var(--muted);
 }
 </style>
+<script>
+    // FPS COUNTER với hiệu ứng
+class SimpleFPSCounter {
+  constructor() {
+    this.fps = 0;
+    this.frameCount = 0;
+    this.lastTime = performance.now();
+    this.fpsHistory = [];
+    this.maxHistory = 10;
+    
+    this.init();
+  }
+  
+  init() {
+    // Tạo FPS display
+    this.createDisplay();
+    // Bắt đầu đo
+    this.start();
+  }
+  
+  createDisplay() {
+    const fpsDisplay = document.createElement('div');
+    fpsDisplay.className = 'fps-display';
+    fpsDisplay.innerHTML = `
+      <span id="fps-value">--</span> 
+      <span class="fps-label">FPS</span>
+      <div class="fps-tooltip">
+        <div class="fps-graph" id="fps-graph"></div>
+        <div class="fps-avg">Avg: <span id="fps-avg">--</span></div>
+      </div>
+    `;
+    
+    // Thêm vào header
+    const header = document.querySelector('header');
+    if (header) {
+      header.insertBefore(fpsDisplay, header.firstChild);
+    }
+    
+    // Hiệu ứng hover
+    fpsDisplay.addEventListener('mouseenter', () => {
+      fpsDisplay.classList.add('show-tooltip');
+    });
+    
+    fpsDisplay.addEventListener('mouseleave', () => {
+      fpsDisplay.classList.remove('show-tooltip');
+    });
+  }
+  
+  start() {
+    const update = () => {
+      this.frameCount++;
+      const currentTime = performance.now();
+      
+      if (currentTime - this.lastTime >= 500) {
+        this.fps = Math.round((this.frameCount * 1000) / (currentTime - this.lastTime) * 10) / 10;
+        this.frameCount = 0;
+        this.lastTime = currentTime;
+        
+        // Lưu vào lịch sử
+        this.fpsHistory.push(this.fps);
+        if (this.fpsHistory.length > this.maxHistory) {
+          this.fpsHistory.shift();
+        }
+        
+        // Cập nhật hiển thị
+        this.updateDisplay();
+      }
+      
+      requestAnimationFrame(() => update());
+    };
+    
+    update();
+  }
+  
+  updateDisplay() {
+    const fpsValue = document.getElementById('fps-value');
+    const fpsAvg = document.getElementById('fps-avg');
+    const fpsGraph = document.getElementById('fps-graph');
+    
+    if (fpsValue) {
+      fpsValue.textContent = this.fps;
+      
+      // Đổi màu
+      fpsValue.className = '';
+      if (this.fps >= 55) fpsValue.classList.add('fps-excellent');
+      else if (this.fps >= 30) fpsValue.classList.add('fps-good');
+      else fpsValue.classList.add('fps-poor');
+    }
+    
+    // Tính trung bình
+    if (fpsAvg && this.fpsHistory.length > 0) {
+      const avg = Math.round(this.fpsHistory.reduce((a, b) => a + b) / this.fpsHistory.length * 10) / 10;
+      fpsAvg.textContent = avg;
+    }
+    
+    // Vẽ biểu đồ mini
+    if (fpsGraph && this.fpsHistory.length > 0) {
+      fpsGraph.innerHTML = '';
+      const maxFps = Math.max(...this.fpsHistory, 60);
+      
+      this.fpsHistory.forEach((fps, i) => {
+        const bar = document.createElement('div');
+        bar.className = 'graph-bar';
+        const height = (fps / maxFps) * 30;
+        bar.style.height = `${height}px`;
+        bar.style.backgroundColor = fps >= 50 ? '#1b00ff' : fps >= 30 ? '#ff9800' : '#ff0000';
+        fpsGraph.appendChild(bar);
+      });
+    }
+  }
+}
+
+// CSS bổ sung cho tooltip
+const fpsTooltipCSS = `
+.fps-display {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.fps-display:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.fps-label {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.fps-tooltip {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: rgba(0,0,0,0.9);
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  min-width: 120px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+}
+
+.show-tooltip .fps-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(5px);
+}
+
+.fps-graph {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 40px;
+  margin-bottom: 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.graph-bar {
+  width: 4px;
+  border-radius: 2px;
+  transition: height 0.3s ease;
+}
+
+.fps-avg {
+  text-align: center;
+  font-family: monospace;
+}
+`;
+
+// Thêm CSS vào
+const style = document.createElement('style');
+style.textContent = fpsTooltipCSS;
+document.head.appendChild(style);
+
+// Khởi tạo
+window.addEventListener('DOMContentLoaded', () => {
+  new SimpleFPSCounter();
+});
+</script>
   <script>
     // 1. DARK MODE
     const body = document.body;
