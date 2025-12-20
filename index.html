@@ -4,24 +4,21 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>HÀ NHÂN KIỆT</title>
-  <link rel="icon" href="icon.jpeg" />
+  <link rel="icon" href="kiet.jpg" />
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
   <style>
     /* 1. RESET & VARIABLE */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
     :root {
-      --bg: #e0e5ec; --text: #333; --muted: #666; --brand: #4da3ff; 
+      --bg: #e0e5ec; --text: #000000; --muted: #666; --brand: #4da3ff; 
       --brand-2: #8a5cff; --card: #e0e5ec; --bd: #b8c0cc;
-      --shadow-light: rgba(255, 255, 255, 0.7); --shadow-dark: rgba(0, 0, 0, 0.2);
+      --shadow-light: rgba(169, 187, 217, 0.7); --shadow-dark: rgba(255, 185, 185, 0);
       --neumo-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
       --neumo-inset: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
     }
 
-    body.dark-mode {
-      --bg: #2a2a2a; --text: #e0e5ec; --muted: #a0a0a0; --card: #2a2a2a; 
-      --shadow-light: rgba(255, 255, 255, 0.05); --shadow-dark: rgba(0, 0, 0, 0.5);
-    }
+   
 
     body {
       font-family: 'Outfit', sans-serif; min-height: 100vh;
@@ -112,6 +109,113 @@
       .pills, .social { justify-content: center; }
       .season-btn { padding: 10px 15px; font-size: 0.85rem; }
     }
+    .music-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.music-controls-container {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 25px;
+    padding: 8px 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.music-icon {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+    margin-right: 10px;
+    transition: transform 0.2s;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.music-icon:hover {
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.volume-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+#volume-slider {
+    width: 100px;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    outline: none;
+}
+
+#volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #4CAF50;
+    cursor: pointer;
+    border: 2px solid white;
+}
+
+#volume-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #4CAF50;
+    cursor: pointer;
+    border: 2px solid white;
+}
+
+.volume-display {
+    color: white;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+    min-width: 40px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 8px;
+    border-radius: 10px;
+}
+
+/* Hiệu ứng hover cho volume slider */
+#volume-slider:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+#volume-slider:hover::-webkit-slider-thumb {
+    background: #66BB6A;
+    transform: scale(1.1);
+}
   </style>
 </head>
 <body>
@@ -147,6 +251,164 @@
       <button class="season-btn" data-season="winter">❄️ Đông</button>
     </div>
   </section>
+    <script>
+class BackgroundMusic {
+    constructor() {
+        this.audio = new Audio('music.mp3');
+        this.audio.loop = true;
+        this.audio.volume = 0.5;
+        this.isPlaying = false;
+        this.isVolumeVisible = false;
+        
+        this.init();
+    }
+    
+    init() {
+        // Tạo nút điều khiển
+        this.createControls();
+        
+        // Cho phép autoplay sau khi user tương tác
+        document.body.addEventListener('click', this.firstInteraction.bind(this));
+    }
+    
+    createControls() {
+        const controls = document.createElement('div');
+        controls.className = 'music-controls';
+        controls.innerHTML = `
+            <div class="music-controls-container">
+                <button id="toggle-music" class="music-icon">🎵</button>
+                <div class="volume-controls" id="volume-controls">
+                    <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5">
+                    <div class="volume-display" id="volume-display">50%</div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(controls);
+        
+        // Lấy các element
+        this.toggleBtn = document.getElementById('toggle-music');
+        this.volumeControls = document.getElementById('volume-controls');
+        this.volumeSlider = document.getElementById('volume-slider');
+        this.volumeDisplay = document.getElementById('volume-display');
+        
+        // Ẩn thanh volume ban đầu
+        this.volumeControls.style.display = 'none';
+        
+        // Sự kiện click icon nhạc
+        this.toggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Ngăn sự kiện lan ra ngoài
+            this.toggleVolumeControls();
+            this.toggle();
+        });
+        
+        // Sự kiện thay đổi volume
+        this.volumeSlider.addEventListener('input', (e) => {
+            this.audio.volume = e.target.value;
+            this.updateVolumeDisplay();
+        });
+        
+        // Click ra ngoài để ẩn thanh volume
+        document.addEventListener('click', (e) => {
+            if (!this.volumeControls.contains(e.target) && e.target !== this.toggleBtn) {
+                this.hideVolumeControls();
+            }
+        });
+        
+        // Không ẩn volume khi click vào chính nó
+        this.volumeControls.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    }
+    
+    toggleVolumeControls() {
+        if (this.isVolumeVisible) {
+            this.hideVolumeControls();
+        } else {
+            this.showVolumeControls();
+        }
+    }
+    
+    showVolumeControls() {
+        this.volumeControls.style.display = 'flex';
+        this.isVolumeVisible = true;
+        
+        // Cập nhật giá trị slider và hiển thị
+        this.volumeSlider.value = this.audio.volume;
+        this.updateVolumeDisplay();
+        
+        // Tự động ẩn sau 3 giây nếu không tương tác
+        this.clearHideTimeout();
+        this.hideTimeout = setTimeout(() => {
+            this.hideVolumeControls();
+        }, 3000);
+    }
+    
+    hideVolumeControls() {
+        this.volumeControls.style.display = 'none';
+        this.isVolumeVisible = false;
+        this.clearHideTimeout();
+    }
+    
+    clearHideTimeout() {
+        if (this.hideTimeout) {
+            clearTimeout(this.hideTimeout);
+            this.hideTimeout = null;
+        }
+    }
+    
+    updateVolumeDisplay() {
+        const volumePercent = Math.round(this.audio.volume * 100);
+        this.volumeDisplay.textContent = `${volumePercent}%`;
+        
+        // Thay đổi icon theo volume
+        let volumeIcon = '🔊';
+        if (this.audio.volume === 0) {
+            volumeIcon = '🔇';
+        } else if (this.audio.volume < 0.3) {
+            volumeIcon = '🔈';
+        } else if (this.audio.volume < 0.7) {
+            volumeIcon = '🔉';
+        }
+        
+        // Cập nhật icon nhạc
+        this.toggleBtn.innerHTML = `${volumeIcon}`;
+    }
+    
+    firstInteraction() {
+        if (!this.isPlaying) {
+            this.audio.play().then(() => {
+                this.isPlaying = true;
+                this.updateVolumeDisplay();
+            }).catch(e => {
+                console.log("Autoplay bị chặn");
+            });
+            
+            // Chỉ chạy một lần
+            document.body.removeEventListener('click', this.firstInteraction);
+        }
+    }
+    
+    toggle() {
+        if (this.isPlaying) {
+            this.audio.pause();
+            this.toggleBtn.innerHTML = '🔇';
+        } else {
+            this.audio.play().then(() => {
+                this.isPlaying = true;
+                this.updateVolumeDisplay();
+            }).catch(e => {
+                console.log("Không thể phát nhạc");
+            });
+        }
+        this.isPlaying = !this.isPlaying;
+    }
+}
+
+// Khởi tạo khi trang load
+window.addEventListener('DOMContentLoaded', () => {
+    const bgMusic = new BackgroundMusic();
+});
+</script>
 
   <script>
     // 1. DARK MODE
@@ -218,5 +480,6 @@
     startEffect('winter');
     document.querySelector('[data-season="winter"]').classList.add('active');
   </script>
+  
 </body>
 </html>
