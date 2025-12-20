@@ -6,6 +6,9 @@
   <title>HÀ NHÂN KIỆT</title>
   <link rel="icon" href="kiet.jpg" />
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap" rel="stylesheet">
   <style>
     /* 1. RESET & VARIABLE */
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25,7 +28,7 @@
     }
 
     body {
-      font-family: 'Outfit', sans-serif; min-height: 100vh;
+       font-family: "Bree Serif", serif; min-height: 100vh;
       background: var(--bg); color: var(--text); padding-bottom: 50px;
       display: flex; flex-direction: column; align-items: center;
       transition: background 0.3s ease; overflow-x: hidden;
@@ -205,6 +208,8 @@
       width: 100%;
       max-width: 900px;
       padding: 20px;
+       animation: float 4s ease-in-out infinite;
+
     }
     .season-panel h3 { margin-bottom: 20px; font-size: 1.2rem; color: var(--muted); }
     .season-grid {
@@ -295,7 +300,29 @@
       <button class="season-btn" data-season="winter">❄️ Đông</button>
     </div>
   </section>
-
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-bottom">
+         <p> <span class="heart">❤️</span>Hà Nhân Kiệt</p>
+    </div>
+  </footer>
+  <style>/* 6. FOOTER */
+.footer {
+    width: 100%;
+    max-width: 900px;
+    margin: 40px auto 20px;
+    padding: 30px 20px;
+    background: var(--card);
+    border-radius: 24px;
+    box-shadow: var(--neumo-shadow);
+    animation: float 4s ease-in-out infinite;
+}
+.footer-bottom {
+    text-align: center;
+    padding-top: 2px;
+    color: var(--muted);
+}
+</style>
   <script>
     // 1. DARK MODE
     const body = document.body;
