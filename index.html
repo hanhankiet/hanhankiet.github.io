@@ -18,7 +18,11 @@
       --neumo-inset: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
     }
 
-   
+    body.dark-mode {
+      --bg: #eaeaea; --text: #ffffff; --muted: #aaa; --brand: #4da3ff;
+      --brand-2: #8a5cff; --card: #0f1a38; --bd: #ffffff;
+      --shadow-light: rgba(0, 0, 0, 0.3); --shadow-dark: rgba(255, 255, 255, 0.05);
+    }
 
     body {
       font-family: 'Outfit', sans-serif; min-height: 100vh;
@@ -46,15 +50,123 @@
       grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; padding: 20px;
     }
 
-    /* GIỮ NGUYÊN AVATAR XOAY */
-    .avatar-wrap {
-     
+    /* VÒNG TRÒN XOAY QUANH AVATAR */
+    .avatar-container {
+        position: relative;
+        width: 250px;
+        height: 250px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto;
     }
-    .avatar-wrap::before {
-     
+
+    .avatar {
+        width: 230px;
+        height: 230px;
+        border-radius: 50%;
+        object-fit: cover;
+        position: relative;
+        z-index: 3;
+        animation: avatar-float 4s ease-in-out infinite;
+        border: 3px solid var(--card);
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .avatar { width: 250px; height: 250px; border-radius: 50%; object-fit: cover; display: block; position: relative; z-index: 1; }
+
+    .spinning-border {
+        position: absolute;
+        width: 250px;
+        height: 250px;
+        border-radius: 50%;
+        z-index: 2;
+        background: conic-gradient(
+            from 0deg,
+            #71b6ff,
+            #9c75ff,
+            #fb70c6,
+            #ff5500,
+            #70b2f8
+        );
+        animation: spin 3s linear infinite, colorChange 5s linear infinite;
+        filter: blur(5px);
+        opacity: 1.8;
+    }
+
+    .spinning-border::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 240px;
+        height: 240px;
+        background: var(--card);
+        border-radius: 50%;
+        z-index: 1;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes colorChange {
+        0% {
+            filter: hue-rotate(0deg) blur(5px);
+        }
+        50% {
+            filter: hue-rotate(180deg) blur(5px);
+        }
+        100% {
+            filter: hue-rotate(360deg) blur(5px);
+        }
+    }
+
+    @keyframes avatar-float {
+        0%, 100% {
+            transform: translateY(0) scale(1);
+        }
+        50% {
+            transform: translateY(-10px) scale(1.05);
+        }
+    }
+
+    /* Dark mode support cho vòng tròn */
+    body.dark-mode .spinning-border::before {
+        background: #1a1a2e;
+    }
+
+    .circle-toggle-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: var(--card);
+        box-shadow: var(--neumo-shadow);
+        border: none;
+        color: var(--text);
+        font-size: 1rem;
+        cursor: pointer;
+        z-index: 4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .circle-toggle-btn:hover {
+        transform: scale(1.1) rotate(15deg);
+        box-shadow: var(--neumo-inset);
+    }
+
+    .circle-toggle-btn:active {
+        transform: scale(0.95);
+    }
 
     .detail {
       background: var(--card); box-shadow: var(--neumo-shadow);
@@ -69,6 +181,12 @@
     }
     @keyframes shine { to { background-position: 200% center; } }
 
+    .kicker {
+        color: var(--muted);
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+    }
+
     .pills { display: flex; gap: 10px; margin: 15px 0; }
     .pill { padding: 5px 15px; border-radius: 20px; background: var(--card); box-shadow: var(--neumo-shadow); font-size: 0.8rem; color: var(--muted); }
 
@@ -82,7 +200,11 @@
 
     /* 4. MENU THỜI TIẾT HIỆN SẴN GIỮA TRANG */
     .season-panel {
-     
+      margin-top: 40px;
+      text-align: center;
+      width: 100%;
+      max-width: 900px;
+      padding: 20px;
     }
     .season-panel h3 { margin-bottom: 20px; font-size: 1.2rem; color: var(--muted); }
     .season-grid {
@@ -108,126 +230,46 @@
       .main { grid-template-columns: 1fr; justify-items: center; text-align: center; }
       .pills, .social { justify-content: center; }
       .season-btn { padding: 10px 15px; font-size: 0.85rem; }
+      .avatar-container {
+        width: 200px;
+        height: 200px;
+      }
+      
+      .spinning-border {
+        width: 200px;
+        height: 200px;
+      }
+      
+      .spinning-border::before {
+        width: 190px;
+        height: 190px;
+      }
+      
+      .avatar {
+        width: 180px;
+        height: 180px;
+      }
+      
+      .circle-toggle-btn {
+        top: 5px;
+        right: 5px;
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+      }
     }
-    .music-controls {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-}
-
-.music-controls-container {
-    display: flex;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.8);
-    border-radius: 25px;
-    padding: 8px 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
-}
-
-.music-icon {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 24px;
-    cursor: pointer;
-    padding: 5px;
-    margin-right: 10px;
-    transition: transform 0.2s;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-}
-
-.music-icon:hover {
-    transform: scale(1.1);
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.volume-controls {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-#volume-slider {
-    width: 100px;
-    height: 6px;
-    -webkit-appearance: none;
-    appearance: none;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 3px;
-    outline: none;
-}
-
-#volume-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #4CAF50;
-    cursor: pointer;
-    border: 2px solid white;
-}
-
-#volume-slider::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #4CAF50;
-    cursor: pointer;
-    border: 2px solid white;
-}
-
-.volume-display {
-    color: white;
-    font-size: 14px;
-    font-family: Arial, sans-serif;
-    min-width: 40px;
-    text-align: center;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 4px 8px;
-    border-radius: 10px;
-}
-
-/* Hiệu ứng hover cho volume slider */
-#volume-slider:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-
-#volume-slider:hover::-webkit-slider-thumb {
-    background: #66BB6A;
-    transform: scale(1.1);
-}
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
 </head>
 <body>
 
   <header>
-    
     <button class="mode-btn" id="darkModeToggle"><i class='bx bxs-moon' id="modeIcon"></i></button>
   </header>
 
   <main class="main">
-    <div class="avatar-wrap">
+    <div class="avatar-container">
+      <div class="spinning-border"></div>
       <img src="kiet.jpg" alt="Hà Nhân Kiệt" class="avatar">
     </div>
 
@@ -253,6 +295,7 @@
       <button class="season-btn" data-season="winter">❄️ Đông</button>
     </div>
   </section>
+
   <script>
     // 1. DARK MODE
     const body = document.body;
@@ -322,29 +365,81 @@
     // Mặc định chạy mùa đông khi vào trang
     startEffect('winter');
     document.querySelector('[data-season="winter"]').classList.add('active');
+
+    // 3. ĐIỀU KHIỂN VÒNG TRÒN AVATAR
+    const spinningBorder = document.querySelector('.spinning-border');
+    const avatarContainer = document.querySelector('.avatar-container');
+
+    // Tạo nút bật/tắt hiệu ứng vòng tròn
+    const circleToggleBtn = document.createElement('button');
+    circleToggleBtn.className = 'circle-toggle-btn';
+    circleToggleBtn.innerHTML = '🌀';
+    circleToggleBtn.title = 'Bật/Tắt vòng tròn';
+
+    // Thêm nút vào avatar container
+    avatarContainer.appendChild(circleToggleBtn);
+
+    // Biến trạng thái
+    let isCircleActive = true;
+
+    // Sự kiện click nút bật/tắt
+    circleToggleBtn.addEventListener('click', () => {
+        isCircleActive = !isCircleActive;
+        
+        if (isCircleActive) {
+            spinningBorder.style.animation = 'spin 3s linear infinite, colorChange 5s linear infinite';
+            circleToggleBtn.innerHTML = '🌀';
+            circleToggleBtn.style.boxShadow = 'var(--neumo-shadow)';
+        } else {
+            spinningBorder.style.animation = 'none';
+            circleToggleBtn.innerHTML = '⭕';
+            circleToggleBtn.style.boxShadow = 'var(--neumo-inset)';
+        }
+    });
+
+    // Thêm hiệu ứng hover cho avatar container
+    avatarContainer.addEventListener('mouseenter', () => {
+        if (isCircleActive) {
+            spinningBorder.style.animation = 'spin 1s linear infinite, colorChange 2s linear infinite';
+            spinningBorder.style.filter = 'hue-rotate(90deg) blur(3px) brightness(1.2)';
+        }
+    });
+
+    avatarContainer.addEventListener('mouseleave', () => {
+        if (isCircleActive) {
+            spinningBorder.style.animation = 'spin 3s linear infinite, colorChange 5s linear infinite';
+            spinningBorder.style.filter = 'hue-rotate(0deg) blur(5px)';
+        }
+    });
   </script>
 
- <script>
+  <!-- Đoạn JavaScript cho nhạc vẫn giữ nguyên -->
+  <script>
 class BackgroundMusic {
     constructor() {
         this.songs = [
-            {
+        {
                 id: 1,
+                title: "Lạc vào khu rừng hoa",
+                url: 'lacvaokhurunghoa.mp3'
+            },
+            {
+                id: 2,
                 title: "Không ai nói chia tay",
                 url: 'kainm.mp3'
             },
             {
-                id: 2,
+                id: 3,
                 title: "Hẹn hò nhưng không yêu", 
                 url: 'henho.mp3'
             },
             {
-                id: 3,
+                id: 4,
                 title: "Có mình và ta",
                 url: 'cominhvata.mp3'
             },
              {
-                id: 4,
+                id: 5,
                 title: "Trả cho anh",
                 url: 'trachoanh.mp3'
             }
@@ -353,42 +448,28 @@ class BackgroundMusic {
         this.currentSongIndex = 0;
         this.isPlaying = false;
         this.isExpanded = false;
-        this.hasInteracted = false; // Đánh dấu đã tương tác
-        this.hideTimeout = null;
+        this.hasInteracted = false;
         
         this.init();
     }
     
     init() {
-        // Tạo icon nhỏ ban đầu
         this.createMiniIcon();
-        
-        // Khởi tạo bài hát đầu tiên
         this.loadCurrentSong();
-        
-        // Bắt sự kiện click toàn trang để bật nhạc tự động
         this.setupAutoPlay();
     }
     
     setupAutoPlay() {
-        // Sự kiện click đầu tiên trên trang sẽ bật nhạc
         const firstClickListener = () => {
             if (!this.hasInteracted && !this.isPlaying) {
                 this.hasInteracted = true;
                 this.play();
-                
-                // Chỉ chạy một lần
                 document.removeEventListener('click', firstClickListener);
             }
         };
         
-        // Thêm listener cho toàn bộ trang
         document.addEventListener('click', firstClickListener);
-        
-        // Cũng bắt sự kiện touch cho mobile
         document.addEventListener('touchstart', firstClickListener, { once: true });
-        
-        // Hoặc bắt sự kiện scroll
         window.addEventListener('scroll', firstClickListener, { once: true });
     }
     
@@ -407,15 +488,11 @@ class BackgroundMusic {
                 this.sound.once('unlock', function() {
                     this.sound.play();
                 }.bind(this));
-            }.bind(this),
-            onload: function() {
-                console.log('Đã tải bài:', currentSong.title);
-            }
+            }.bind(this)
         });
     }
     
     createMiniIcon() {
-        // Tạo icon nhỏ
         this.miniIcon = document.createElement('div');
         this.miniIcon.className = 'music-mini-icon';
         this.miniIcon.innerHTML = `
@@ -423,16 +500,13 @@ class BackgroundMusic {
         `;
         document.body.appendChild(this.miniIcon);
         
-        // Tạo panel controls (ẩn ban đầu)
         this.createControlsPanel();
         
-        // Sự kiện click icon
         document.getElementById('music-toggle-mini').addEventListener('click', (e) => {
             e.stopPropagation();
             this.toggleControls();
         });
         
-        // Click ra ngoài để đóng
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.music-mini-icon') && 
                 !e.target.closest('.music-controls-panel')) {
@@ -477,15 +551,12 @@ class BackgroundMusic {
                 </div>
             </div>
             
-            <div class="auto-play-info">
-                <small>🎧</small>
-            </div>
+           
         `;
         
         this.controlsPanel.style.display = 'none';
         document.body.appendChild(this.controlsPanel);
         
-        // Lấy các element
         this.bindPanelElements();
     }
     
@@ -510,7 +581,6 @@ class BackgroundMusic {
     }
     
     bindPanelElements() {
-        // Lấy các element từ panel
         this.toggleBtn = document.getElementById('toggle-music');
         this.prevBtn = document.getElementById('prev-song');
         this.nextBtn = document.getElementById('next-song');
@@ -520,14 +590,12 @@ class BackgroundMusic {
         this.songCounter = document.getElementById('song-counter');
         this.closeBtn = document.getElementById('close-music');
         
-        // Sự kiện
         this.toggleBtn.addEventListener('click', () => this.togglePlay());
         this.prevBtn.addEventListener('click', () => this.prevSong());
         this.nextBtn.addEventListener('click', () => this.nextSong());
         this.volumeSlider.addEventListener('input', (e) => this.setVolume(e.target.value));
         this.closeBtn.addEventListener('click', () => this.collapseControls());
         
-        // Sự kiện playlist
         document.querySelectorAll('.playlist-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 if (e.target.classList.contains('play-btn-small')) {
@@ -553,12 +621,10 @@ class BackgroundMusic {
         this.controlsPanel.style.display = 'block';
         this.isExpanded = true;
         
-        // Hiệu ứng slide in
         setTimeout(() => {
             this.controlsPanel.classList.add('show');
         }, 10);
         
-        // Cập nhật thông tin
         this.updateUI();
     }
     
@@ -583,8 +649,6 @@ class BackgroundMusic {
         this.isPlaying = true;
         this.toggleBtn.innerHTML = '⏸️';
         this.updatePlaylistUI();
-        
-        // Cập nhật icon mini
         document.getElementById('music-toggle-mini').innerHTML = '🎵';
     }
     
@@ -592,28 +656,20 @@ class BackgroundMusic {
         this.sound.pause();
         this.isPlaying = false;
         this.toggleBtn.innerHTML = '▶️';
-        
-        // Cập nhật icon mini
         document.getElementById('music-toggle-mini').innerHTML = '🔇';
     }
     
     playSong(index) {
         this.currentSongIndex = index;
         this.loadCurrentSong();
-        
-        // Tự động phát bài mới
         this.play();
-        
         this.updateUI();
     }
     
     nextSong() {
         this.currentSongIndex = (this.currentSongIndex + 1) % this.songs.length;
         this.loadCurrentSong();
-        
-        // Tự động phát bài tiếp theo
         this.play();
-        
         this.updateUI();
     }
     
@@ -621,10 +677,7 @@ class BackgroundMusic {
         this.currentSongIndex = this.currentSongIndex === 0 ? 
             this.songs.length - 1 : this.currentSongIndex - 1;
         this.loadCurrentSong();
-        
-        // Tự động phát bài trước
         this.play();
-        
         this.updateUI();
     }
     
@@ -632,7 +685,6 @@ class BackgroundMusic {
         this.sound.volume(value);
         this.volumeDisplay.textContent = `${Math.round(value * 100)}%`;
         
-        // Cập nhật icon volume
         let volumeIcon = '🔊';
         if (value === 0) volumeIcon = '🔇';
         else if (value < 0.3) volumeIcon = '🔈';
@@ -645,8 +697,6 @@ class BackgroundMusic {
         const currentSong = this.songs[this.currentSongIndex];
         this.songTitle.textContent = currentSong.title;
         this.songCounter.textContent = `${this.currentSongIndex + 1}/${this.songs.length}`;
-        
-        // Cập nhật playlist
         this.updatePlaylistUI();
     }
     
@@ -670,9 +720,9 @@ class BackgroundMusic {
 window.addEventListener('DOMContentLoaded', () => {
     const bgMusic = new BackgroundMusic();
 });
-</script>
+  </script>
 
-<style>
+  <style>
 /* ICON NHỎ */
 .music-mini-icon {
     position: fixed;
@@ -1048,6 +1098,6 @@ body.dark-mode .playlist-section::-webkit-scrollbar-thumb {
         bottom: 80px;
     }
 }
-</style>
+  </style>
 </body>
 </html>
